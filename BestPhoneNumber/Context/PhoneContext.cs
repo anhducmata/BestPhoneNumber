@@ -9,6 +9,7 @@ namespace BestPhoneNumber.Context
     public class PhoneContext : DbContext
     {
         public DbSet<TelecomHost> TelecomHost { get; set; }
+        public DbSet<NumberProvide> NumberProvide { get; set; }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(@"Data Source=DESKTOP-UB2DQ71;Initial Catalog=master;Integrated Security=True");

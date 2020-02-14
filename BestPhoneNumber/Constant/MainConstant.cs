@@ -15,5 +15,19 @@ namespace BestPhoneNumber.Constant
         {
             "19", "24", "26", "37", "34"
         };
+
+        public static List<List<int>> NiceSumOfNumber = new List<List<int>>
+        {
+            new List<int>
+            {
+                24,29
+            },
+            new List<int>
+            {
+                24,28
+            }
+        };
+
+        public static int SumPhoneNumberTarget = 5;
     }
 }

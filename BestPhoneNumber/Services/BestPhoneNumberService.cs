@@ -1,47 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using Microsoft.Extensions.Logging.Abstractions;
+using BestPhoneNumber.Context;
+using BestPhoneNumber.Dto;
 
 namespace BestPhoneNumber.Services
 {
     public class BestPhoneNumberService
     {
-        public FileService FileService;
-        public BestPhoneNumberService(FileService fileService)
+        public CommonService CommonService;
+        protected readonly PhoneContext Context;
+
+        public BestPhoneNumberService(CommonService commonService, PhoneContext context)
         {
-            FileService = fileService;
+            CommonService = commonService;
+            Context = context;
         }
 
-        public List<string> PrintBestPhoneNumber(string filePath)
+        public List<BestPhoneNumberDto> PrintBestPhoneNumber(string filePath)
         {
-            var phoneList = FileService.ReadPhoneNumberList(filePath);
+            var phoneList = CommonService.ReadPhoneNumberList(filePath);
             var ominous = Constant.MainConstant.Ominous;
             var nobles = Constant.MainConstant.Noble;
-            var result = new List<string>();
+            var result = new List<BestPhoneNumberDto>();
             foreach (var phoneNumber in phoneList)
             {
-                if (this.CheckCondition(phoneNumber, ominous, false) && 
-                    this.CheckCondition(phoneNumber, nobles, true))
+                if (CommonService.CheckEndCondition(phoneNumber, ominous, false) &&
+                    CommonService.CheckEndCondition(phoneNumber, nobles, true) &&
+                    CommonService.ValidatePhoneSumNumber(phoneNumber, Constant.MainConstant.SumPhoneNumberTarget))
                 {
-                    result.Add(phoneNumber);
+                    var tempResult = ValidatePhoneNumber(phoneNumber);
+                    result.Add(tempResult);
                 }
             }
+
+            result = result.OrderBy(x => x.TelecomProvider).ToList();
             return result;
         }
 
-
-        protected bool CheckEndCondition(string number, List<string> filterList, bool expectResult)
+        public BestPhoneNumberDto ValidatePhoneNumber(string phoneNumber)
         {
-            
-
-            foreach (var omi in filterList)
+            var telecomProvider = Context.TelecomHost.ToList();
+            var prefixList = Context.NumberProvide.ToList();
+            var result = new BestPhoneNumberDto();
+            foreach (var prefix in prefixList)
             {
-                if (number.EndsWith(omi)) return expectResult;
+                if (phoneNumber.StartsWith(prefix.PrefixNumber))
+                {
+                    var tempTelecom = telecomProvider.Find(x => x.Id == prefix.TelecomHostId);
+                    if (tempTelecom != null)
+                    {
+                        var telecomProviderName = tempTelecom.Name;
+                        result = new BestPhoneNumberDto(phoneNumber, telecomProviderName);
+                    }
+                    return result;
+                }
             }
-
-            return !expectResult;
+            return result;
         }
     }
 }
