@@ -4,6 +4,9 @@ using System.Text;
 
 namespace BestPhoneNumber.Dto
 {
+    /// <summary>
+    /// Data transfer object when parse to return
+    /// </summary>
     public class BestPhoneNumberDto
     {
         public BestPhoneNumberDto()
