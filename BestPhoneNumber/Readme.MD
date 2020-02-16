@@ -1,6 +1,4 @@
-﻿**
-Step by step run:
-**
+﻿**Step by step run:**
 
 - step 1: Load all dependency
 - step 2: Config the connect string in PhoneContext.cs
